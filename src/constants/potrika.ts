@@ -1,0 +1,1 @@
+export const DEFAULT_POTRIKA_ID = "69b593e1727c58887aeb0eb1";

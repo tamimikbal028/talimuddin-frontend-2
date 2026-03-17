@@ -1,0 +1,247 @@
+import { useState } from "react";
+import { FaGlobe, FaLock, FaPaperPlane, FaUserFriends } from "react-icons/fa";
+import type { IconType } from "react-icons";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { POST_VISIBILITY, POST_TARGET_MODELS } from "../../constants/post";
+import { authHooks } from "../../hooks/useAuth";
+import { postHooks } from "../../hooks/common/usePost";
+import { useParams } from "react-router-dom";
+import { AvatarImage } from "../shared/FallbackImage";
+
+const createPotrikaPostSchema = z.object({
+  content: z
+    .string()
+    .trim()
+    .min(1, "Post content is required")
+    .max(5000, "Post cannot exceed 5000 characters"),
+  title: z.string().optional(),
+  tags: z.string().optional(),
+  visibility: z.string(),
+});
+
+type CreatePotrikaPostFormData = z.infer<typeof createPotrikaPostSchema>;
+
+const CreatePotrikaPost = () => {
+  const { potrikaId } = useParams();
+  const { user: currentUser } = authHooks.useUser();
+
+  const { mutate: createPost, isPending } = postHooks.useCreatePost({
+    queryKey: ["potrika", "posts", potrikaId],
+    invalidateKey: [
+      ["potrika", "posts", potrikaId],
+      ["potrika", "header", potrikaId],
+    ],
+  });
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { isValid },
+  } = useForm<CreatePotrikaPostFormData>({
+    resolver: zodResolver(createPotrikaPostSchema),
+    defaultValues: {
+      title: "",
+      content: "",
+      tags: "",
+      visibility: POST_VISIBILITY.PUBLIC,
+    },
+  });
+
+  const privacy = watch("visibility");
+
+  const postContent = watch("content");
+
+  const onSubmit = (data: CreatePotrikaPostFormData) => {
+    // Process tags: split by comma or space, remove empty strings
+    const processedTags = data.tags
+      ? data.tags
+          .split(/[\s,]+/) // Split by comma or whitespace
+          .map((tag) => tag.trim())
+          .filter((tag) => tag.length > 0)
+      : [];
+
+    createPost(
+      {
+        title: data.title,
+        content: data.content,
+        visibility: data.visibility as "PUBLIC" | "ONLY_ME",
+        postOnId: potrikaId as string,
+        postOnModel: POST_TARGET_MODELS.POTRIKA,
+        attachments: [],
+        tags: processedTags,
+      },
+      {
+        onSuccess: () => {
+          reset();
+          setIsExpanded(false);
+        },
+      }
+    );
+  };
+
+  const privacyOptions: Array<{
+    value: (typeof POST_VISIBILITY)[keyof typeof POST_VISIBILITY];
+    label: string;
+    Icon: IconType;
+    show: boolean;
+  }> = [
+    {
+      value: POST_VISIBILITY.PUBLIC,
+      label: "Public",
+      Icon: FaGlobe,
+      show: true,
+    },
+    {
+      value: POST_VISIBILITY.CONNECTIONS,
+      label: "Connections",
+      Icon: FaUserFriends,
+      show: false,
+    },
+    {
+      value: POST_VISIBILITY.ONLY_ME,
+      label: "Only me",
+      Icon: FaLock,
+      show: true,
+    },
+  ];
+
+  return (
+    <div className="rounded-lg border border-gray-400 bg-white p-4 shadow">
+      {currentUser?.restrictions?.isPostBlocked ? (
+        <div className="rounded-lg bg-red-50 p-4 text-center">
+          <p className="text-sm font-medium text-red-600">
+            You are restricted from posting.
+          </p>
+          {currentUser.restrictions.postRestriction?.reason && (
+            <p className="mt-1 text-xs text-red-500">
+              Reason: {currentUser.restrictions.postRestriction.reason}
+            </p>
+          )}
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* User Avatar and Input */}
+          <div className="flex space-x-3">
+            <AvatarImage
+              src={currentUser?.avatar}
+              name={currentUser?.fullName || "You"}
+              alt={currentUser?.fullName || "Your avatar"}
+              className="h-10 w-10 flex-shrink-0 rounded-full bg-gray-300 object-cover"
+            />
+            <div className="flex-1">
+              <div className="relative">
+                {isExpanded && (
+                  <input
+                    type="text"
+                    {...register("title")}
+                    placeholder="Post Title (Optional)"
+                    className="mb-2 w-full rounded-lg border border-gray-300 p-2 text-sm font-bold focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                )}
+                <textarea
+                  {...register("content")}
+                  onFocus={() => setIsExpanded(true)}
+                  placeholder={`Share something on Potrika...`}
+                  className="w-full resize-none rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  rows={isExpanded ? 4 : 1}
+                  maxLength={5000}
+                />
+              </div>
+              {/* Tags Input (Only visible when expanded) */}
+              {isExpanded && (
+                <input
+                  type="text"
+                  {...register("tags")}
+                  placeholder="Add tags (separated by space or comma)"
+                  className="mt-2 w-full rounded-lg border border-gray-300 p-2 text-sm font-medium focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Expanded Options */}
+          {isExpanded && (
+            <div className="mt-4">
+              {/* Privacy Options */}
+              <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
+                {/* Privacy Selector */}
+                <div className="flex items-center space-x-2">
+                  {privacyOptions
+                    .filter((opt) => opt.show)
+                    .map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() =>
+                          setValue("visibility", opt.value, {
+                            shouldValidate: true,
+                          })
+                        }
+                        className={`flex items-center gap-2 rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
+                          privacy === opt.value
+                            ? "bg-blue-50 text-blue-600"
+                            : "text-gray-600 hover:bg-gray-100"
+                        }`}
+                      >
+                        <opt.Icon className="h-4 w-4" />
+                        <span className="hidden sm:inline">{opt.label}</span>
+                      </button>
+                    ))}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => {
+                    reset();
+                    setIsExpanded(false);
+                  }}
+                  className="flex items-center gap-2 rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:border-red-200 hover:bg-red-50"
+                >
+                  <span>Cancel</span>
+                </button>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-400">
+                    {postContent?.length || 0}/5000
+                  </span>
+                  <button
+                    type="submit"
+                    disabled={!isValid || isPending}
+                    className="flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <span>{isPending ? "Posting..." : "Post"}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Simple Post Button (when not expanded) */}
+          {!isExpanded && postContent && (
+            <div className="mt-3 flex justify-end">
+              <button
+                type="submit"
+                disabled={isPending}
+                className="flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+              >
+                <FaPaperPlane className="h-4 w-4" />
+                <span>{isPending ? "Posting..." : "Post"}</span>
+              </button>
+            </div>
+          )}
+        </form>
+      )}
+    </div>
+  );
+};
+
+export default CreatePotrikaPost;
