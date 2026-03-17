@@ -7,11 +7,13 @@ import {
   FaNewspaper,
 } from "react-icons/fa";
 import { authHooks } from "../hooks/useAuth";
+import { branchHooks } from "../hooks/useBranch";
 import { DEFAULT_POTRIKA_ID } from "../constants/potrika";
 
 const Sidebar = ({ onClose }: { onClose?: () => void }) => {
   const location = useLocation();
   const { user, isAppAdmin } = authHooks.useUser();
+  const { data: myBranchData } = branchHooks.useMyBranch();
 
   // Dynamic profile path - uses username
   const profilePath = user?.userName ? `/profile/${user.userName}` : "/profile";
@@ -27,7 +29,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
       icon: FaSchool,
       label: "My Branch",
       path: "/branch",
-      display: !isAppAdmin,
+      display: !isAppAdmin && !!myBranchData?.data?.meta?.hasMembership,
       active: location.pathname === "/branch",
     },
     {
