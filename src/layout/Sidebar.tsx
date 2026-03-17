@@ -32,7 +32,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     },
     {
       icon: FaDoorOpen,
-      label: "All Branches (Admin)",
+      label: "All Branches",
       path: "/branch/all",
       display: true,
       active: location.pathname === "/branch/all",

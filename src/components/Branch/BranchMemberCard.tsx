@@ -9,13 +9,9 @@ import { AvatarImage } from "../shared/FallbackImage";
 
 interface BranchMemberCardProps {
   member: BranchMember;
-  isPendingRequest?: boolean;
 }
 
-const BranchMemberCard = ({
-  member,
-  isPendingRequest = false,
-}: BranchMemberCardProps) => {
+const BranchMemberCard = ({ member }: BranchMemberCardProps) => {
   const { user, meta, isAdmin } = member;
   const {
     isOpen: showMenu,
@@ -29,8 +25,6 @@ const BranchMemberCard = ({
   const { mutate: removeMember } = branchHooks.useRemoveBranchMember();
   const { mutate: promoteMember } = branchHooks.usePromoteBranchMember();
   const { mutate: demoteMember } = branchHooks.useDemoteBranchMember();
-  const { mutate: approveRequest } = branchHooks.useApproveJoinRequest();
-  const { mutate: rejectRequest } = branchHooks.useRejectJoinRequest();
 
   const canManage = meta.canManage;
 
@@ -73,28 +67,6 @@ const BranchMemberCard = ({
     }
   };
 
-  const renderActions = () => {
-    if (isPendingRequest) {
-      return (
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => approveRequest(user._id)}
-            className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
-          >
-            Approve
-          </button>
-          <button
-            onClick={() => rejectRequest(user._id)}
-            className="rounded-lg border border-red-200 bg-red-50 px-4 py-1.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100"
-          >
-            Reject
-          </button>
-        </div>
-      );
-    }
-    return null;
-  };
-
   const institutionName = user.institution?.name || "No Institution";
 
   const getRoleBadge = () => {
@@ -135,8 +107,6 @@ const BranchMemberCard = ({
         <p className="text-sm font-medium text-gray-500">{institutionName}</p>
       </div>
       <div className="flex items-center gap-2">
-        {renderActions()}
-
         {/* 3-dot dropdown menu */}
         {canManage && (
           <div className="relative" ref={menuRef}>

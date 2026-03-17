@@ -6,7 +6,6 @@ import PageLoader from "../Fallbacks/PageLoader";
 const MyBranch = lazy(() => import("../../components/Branch/MyBranch"));
 const BranchDetails = lazy(() => import("./BranchDetails"));
 const CreateBranchPage = lazy(() => import("./CreateBranchPage"));
-const JoinBranchPage = lazy(() => import("./JoinBranchPage"));
 const EditBranchPage = lazy(() => import("./EditBranchPage"));
 const Header = lazy(() => import("../../components/Branch/BranchHeader"));
 const AllBranches = lazy(() => import("../../components/Branch/AllBranches"));
@@ -28,7 +27,6 @@ const Branch = () => {
 
         {/* Standalone Routes (No Header) */}
         <Route path="createbranch" element={<CreateBranchPage />} />
-        <Route path="joinbranch" element={<JoinBranchPage />} />
         <Route path="branches/:branchId/edit" element={<EditBranchPage />} />
         <Route path="branches/:branchId/*" element={<BranchDetails />} />
       </Routes>

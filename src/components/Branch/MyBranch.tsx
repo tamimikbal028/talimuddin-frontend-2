@@ -30,7 +30,15 @@ const MyBranch = () => {
   if (branchId) {
     return <Navigate to={`/branch/branches/${branchId}`} replace />;
   } else {
-    return <Navigate to="/branch/joinbranch" replace />;
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 p-20 text-center">
+        <h2 className="text-2xl font-bold text-gray-800">No Branch Found</h2>
+        <p className="text-gray-600">
+          You are not a member of any branch. Please contact an administrator
+          to be added to a branch.
+        </p>
+      </div>
+    );
   }
 };
 
