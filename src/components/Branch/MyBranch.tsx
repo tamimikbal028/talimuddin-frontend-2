@@ -31,11 +31,12 @@ const MyBranch = () => {
     return <Navigate to={`/branch/branches/${branchId}`} replace />;
   } else {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 p-20 text-center">
-        <h2 className="text-2xl font-bold text-gray-800">No Branch Found</h2>
+      <div className="flex flex-col items-center justify-center p-20 text-center">
+        <h1 className="text-2xl font-bold text-gray-800">
+          You are not a Admin of any branch.
+        </h1>
         <p className="text-gray-600">
-          You are not a member of any branch. Please contact an administrator
-          to be added to a branch.
+          Please contact an administrator to be added to a branch.
         </p>
       </div>
     );

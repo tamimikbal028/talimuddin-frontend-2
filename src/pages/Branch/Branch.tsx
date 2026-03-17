@@ -25,7 +25,6 @@ const Branch = () => {
           }
         />
 
-        {/* Standalone Routes (No Header) */}
         <Route path="createbranch" element={<CreateBranchPage />} />
         <Route path="branches/:branchId/edit" element={<EditBranchPage />} />
         <Route path="branches/:branchId/*" element={<BranchDetails />} />
