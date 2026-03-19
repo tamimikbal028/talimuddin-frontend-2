@@ -16,18 +16,4 @@
   *::-webkit-scrollbar {
     display: none;
   }
-
-  /* Robust fix for sonner toast centering when width is fit-content */
-  [data-sonner-toaster][data-mobile="true"] {
-    left: 0 !important;
-    right: 0 !important;
-    display: flex !important;
-    justify-content: center !important;
-  }
-
-  [data-sonner-toaster][data-mobile="true"] [data-sonner-toast] {
-    width: fit-content !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
 }
