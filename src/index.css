@@ -16,4 +16,10 @@
   *::-webkit-scrollbar {
     display: none;
   }
+
+  /* Fix sonner toast centering when width is fit-content */
+  [data-sonner-toaster][data-mobile="true"] [data-sonner-toast] {
+    margin-right: auto !important;
+    margin-left: auto !important;
+  }
 }
