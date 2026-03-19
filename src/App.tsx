@@ -30,7 +30,14 @@ const App = () => {
   if (isCheckingAuth) {
     return (
       <>
-        <Toaster position="top-right" richColors closeButton />
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+          toastOptions={{
+            style: { width: "fit-content" },
+          }}
+        />
         <div className="flex min-h-screen w-full items-center justify-center text-2xl font-semibold text-gray-600 sm:text-5xl">
           Checking Authentication...
         </div>
@@ -41,7 +48,14 @@ const App = () => {
   if (!isAuthenticated) {
     return (
       <>
-        <Toaster position="top-right" richColors closeButton />
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+          toastOptions={{
+            style: { width: "fit-content" },
+          }}
+        />
         <MainContent />
       </>
     );
@@ -49,7 +63,14 @@ const App = () => {
 
   return (
     <>
-      <Toaster position="top-right" richColors closeButton />
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        toastOptions={{
+          style: { width: "fit-content" },
+        }}
+      />
 
       {/* Mobile/Tablet portrait: backdrop overlay for drawer */}
       {isSidebarOpen && (
@@ -84,7 +105,7 @@ const App = () => {
 
           {/* Main content */}
           <div className="h-full overflow-y-auto scroll-smooth pt-[70px] lg:pt-0">
-            <div className="mx-auto w-full max-w-[850px] space-y-5 pb-3 px-3 sm:px-5 sm:py-3 lg:px-4">
+            <div className="mx-auto w-full max-w-[850px] space-y-5 px-3 pb-3 sm:px-5 sm:py-3 lg:px-4">
               <MainContent />
             </div>
           </div>
