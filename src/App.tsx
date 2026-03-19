@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Toaster } from "sonner";
 import Sidebar from "./layout/Sidebar";
 import MainContent from "./layout/MainContent";
 import TopNav from "./layout/TopNav";
@@ -29,49 +28,18 @@ const App = () => {
 
   if (isCheckingAuth) {
     return (
-      <>
-        <Toaster
-          position="top-right"
-          richColors
-          closeButton
-          toastOptions={{
-            style: { width: "fit-content" },
-          }}
-        />
-        <div className="flex min-h-screen w-full items-center justify-center text-2xl font-semibold text-gray-600 sm:text-5xl">
-          Checking Authentication...
-        </div>
-      </>
+      <div className="flex min-h-screen w-full items-center justify-center text-2xl font-semibold text-gray-600 sm:text-5xl">
+        Checking Authentication...
+      </div>
     );
   }
 
   if (!isAuthenticated) {
-    return (
-      <>
-        <Toaster
-          position="top-right"
-          richColors
-          closeButton
-          toastOptions={{
-            style: { width: "fit-content" },
-          }}
-        />
-        <MainContent />
-      </>
-    );
+    return <MainContent />;
   }
 
   return (
     <>
-      <Toaster
-        position="top-right"
-        richColors
-        closeButton
-        toastOptions={{
-          style: { width: "fit-content" },
-        }}
-      />
-
       {/* Mobile/Tablet portrait: backdrop overlay for drawer */}
       {isSidebarOpen && (
         <div
